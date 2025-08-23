@@ -1,0 +1,3 @@
+.env
+/test/.env_test
+.idea
