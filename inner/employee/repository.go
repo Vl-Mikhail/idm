@@ -39,7 +39,7 @@ func (r *EmployeeRepository) FindAll() (employees []EmployeeEntity, err error) {
 
 // найти слайс элементов коллекции по слайсу их id
 func (r *EmployeeRepository) FindByIds(ids []int64) (employees []EmployeeEntity, err error) {
-	query, args, err := sqlx.In("SELECT * FROM employee WHERE id IN ($1);", ids)
+	query, args, err := sqlx.In("SELECT * FROM employee WHERE id IN (?);", ids)
 
 	if err != nil {
 		return nil, err
@@ -59,7 +59,7 @@ func (r *EmployeeRepository) DeleteById(id int64) (employeeId int64, err error) 
 
 // удалить элементы по слайсу их id
 func (r *EmployeeRepository) DeleteByIds(ids []int64) (employeeIds []int64, err error) {
-	query, args, err := sqlx.In("DELETE FROM employee WHERE id IN ($1) RETURNING id", ids)
+	query, args, err := sqlx.In("DELETE FROM employee WHERE id IN (?) RETURNING id", ids)
 
 	if err != nil {
 		return nil, err

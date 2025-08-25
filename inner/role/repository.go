@@ -37,7 +37,7 @@ func (r *RoleRepository) FindAll() (roles []RoleEntity, err error) {
 
 // найти слайс элементов коллекции по слайсу их id
 func (r *RoleRepository) FindByIds(ids []int64) (roles []RoleEntity, err error) {
-	query, args, err := sqlx.In("SELECT * FROM role WHERE id IN ($1);", ids)
+	query, args, err := sqlx.In("SELECT * FROM role WHERE id IN (?);", ids)
 
 	if err != nil {
 		return nil, err
@@ -57,7 +57,7 @@ func (r *RoleRepository) DeleteById(id int64) (roleId int64, err error) {
 
 // удалить элементы по слайсу их id
 func (r *RoleRepository) DeleteByIds(ids []int64) (roleIds []int64, err error) {
-	query, args, err := sqlx.In("DELETE FROM role WHERE id IN ($1) RETURNING id", ids)
+	query, args, err := sqlx.In("DELETE FROM role WHERE id IN (?) RETURNING id", ids)
 
 	if err != nil {
 		return nil, err
