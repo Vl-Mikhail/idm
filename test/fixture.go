@@ -36,15 +36,15 @@ func CreateRoleTestTables(db *sqlx.DB) {
 }
 
 type EmployeeFixture struct {
-	employees *employee.EmployeeRepository
+	employees *employee.Repository
 }
 
-func NewEmployeeFixture(employees *employee.EmployeeRepository) *EmployeeFixture {
+func NewEmployeeFixture(employees *employee.Repository) *EmployeeFixture {
 	return &EmployeeFixture{employees}
 }
 
 func (f *EmployeeFixture) Employee(name string) int64 {
-	var entity = employee.EmployeeEntity{
+	var entity = employee.Entity{
 		Name: name,
 	}
 	var newId, err = f.employees.CreateEmployee(entity)
@@ -55,15 +55,15 @@ func (f *EmployeeFixture) Employee(name string) int64 {
 }
 
 type RoleFixture struct {
-	role *role.RoleRepository
+	role *role.Repository
 }
 
-func NewRoleFixture(role *role.RoleRepository) *RoleFixture {
+func NewRoleFixture(role *role.Repository) *RoleFixture {
 	return &RoleFixture{role}
 }
 
 func (f *RoleFixture) Role(name string) int64 {
-	var entity = role.RoleEntity{
+	var entity = role.Entity{
 		Name: name,
 	}
 	var newId, err = f.role.CreateRole(entity)
