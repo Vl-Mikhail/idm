@@ -21,7 +21,7 @@ func TestRoleRepository(t *testing.T) {
 			clearDatabase()
 		}
 	}()
-	var roleRepository = role.NewRoleRepository(db)
+	var roleRepository = role.NewRepository(db)
 	var fixture = NewRoleFixture(roleRepository)
 
 	t.Run("find an role by id", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestRoleRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.NotEmpty(got.ID)
+		a.NotEmpty(got.Id)
 		a.NotEmpty(got.CreatedAt)
 		a.NotEmpty(got.UpdatedAt)
 		a.Equal("Test Name", got.Name)
@@ -57,7 +57,7 @@ func TestRoleRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.Equal(newRoleId, got[0].ID)
+		a.Equal(newRoleId, got[0].Id)
 		clearDatabase()
 	})
 
@@ -70,7 +70,7 @@ func TestRoleRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.Equal(newRoleId, got[0].ID)
+		a.Equal(newRoleId, got[0].Id)
 		clearDatabase()
 	})
 
