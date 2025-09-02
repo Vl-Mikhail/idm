@@ -106,4 +106,25 @@ func TestEmployeeRepository(t *testing.T) {
 		clearDatabase()
 	})
 
+	t.Run("Create an employee with tx", func(t *testing.T) {
+		tx, err := employeeRepository.BeginTransaction()
+		a.Nil(err)
+
+		emplId, err := employeeRepository.CreateEmployeeTx(tx, employee.Entity{Name: "Test Name"})
+
+		a.Nil(err)
+
+		err = tx.Commit()
+
+		a.Nil(err)
+		a.NotEmpty(emplId)
+
+		got, err := employeeRepository.FindById(emplId)
+
+		a.Nil(err)
+		a.Equal("Test Name", got.Name)
+
+		clearDatabase()
+	})
+
 }

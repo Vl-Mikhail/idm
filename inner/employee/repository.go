@@ -12,6 +12,31 @@ func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{db: db}
 }
 
+func (r *Repository) BeginTransaction() (tx *sqlx.Tx, err error) {
+	return r.db.Beginx()
+}
+
+// Проверить наличие в базе данных сотрудника с заданным именем
+func (r *Repository) FindByNameTx(tx *sqlx.Tx, name string) (isExists bool, err error) {
+	err = tx.Get(
+		&isExists,
+		"select exists(select 1 from employee where name = $1)",
+		name,
+	)
+	return isExists, err
+}
+
+// добавить новый элемент в коллекцию
+func (r *Repository) CreateEmployeeTx(tx *sqlx.Tx, employee Entity) (employeeId int64, err error) {
+	err = tx.Get(
+		&employeeId,
+		`insert into employee (name) values ($1) returning id`,
+		employee.Name,
+	)
+
+	return employeeId, err
+}
+
 // добавить новый элемент в коллекцию
 func (r *Repository) CreateEmployee(employee Entity) (employeeId int64, err error) {
 	err = r.db.Get(&employeeId, "INSERT INTO employee (name) VALUES ($1) returning id", employee.Name)
