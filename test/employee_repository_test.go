@@ -108,6 +108,8 @@ func TestEmployeeRepository(t *testing.T) {
 
 	t.Run("Create an employee with tx", func(t *testing.T) {
 		tx, err := employeeRepository.BeginTransaction()
+		a.Nil(err)
+
 		emplId, err := employeeRepository.CreateEmployeeTx(tx, employee.Entity{Name: "Test Name"})
 
 		a.Nil(err)
