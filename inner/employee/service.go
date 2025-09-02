@@ -2,6 +2,8 @@ package employee
 
 import (
 	"fmt"
+
+	"github.com/jmoiron/sqlx"
 )
 
 type Service struct {
@@ -15,6 +17,9 @@ type Repo interface {
 	FindByIds(ids []int64) ([]Entity, error)
 	DeleteById(id int64) (int64, error)
 	DeleteByIds(ids []int64) ([]int64, error)
+	BeginTransaction() (*sqlx.Tx, error)
+	FindByNameTx(tx *sqlx.Tx, name string) (bool, error)
+	CreateEmployeeTx(tx *sqlx.Tx, employee Entity) (int64, error)
 }
 
 func NewService(
@@ -26,12 +31,48 @@ func NewService(
 }
 
 func (svc *Service) CreateEmployee(name string) (int64, error) {
-	var employeeId, err = svc.repo.CreateEmployee(Entity{Name: name})
+	tx, err := svc.repo.BeginTransaction()
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("creating employee panic: %v", r)
+			errTx := tx.Rollback()
+			if errTx != nil {
+				err = fmt.Errorf("creating employee: rolling back transaction errors: %w, %w", err, errTx)
+			}
+		} else if err != nil {
+			errTx := tx.Rollback()
+			if errTx != nil {
+				err = fmt.Errorf("creating employee: rolling back transaction errors: %w, %w", err, errTx)
+			}
+		} else {
+			errTx := tx.Commit()
+			if errTx != nil {
+				err = fmt.Errorf("creating employee: commiting transaction error: %w", errTx)
+			}
+		}
+	}()
+
 	if err != nil {
-		return 0, fmt.Errorf("error create employee with name %s: %w", name, err)
+		return 0, fmt.Errorf("error create employee: error creating transaction: %w", err)
 	}
 
-	return employeeId, nil
+	isExist, err := svc.repo.FindByNameTx(tx, name)
+
+	if err != nil {
+		return 0, fmt.Errorf("error finding employee by name: %s, %w", name, err)
+	}
+
+	if isExist {
+		return 0, fmt.Errorf("employee with name %s already exists", name)
+	}
+
+	newEmployeeId, err := svc.repo.CreateEmployeeTx(tx, Entity{Name: name})
+
+	if err != nil {
+		err = fmt.Errorf("error creating employee with name: %s %v", name, err)
+	}
+
+	return newEmployeeId, err
 }
 
 func (svc *Service) FindById(id int64) (Response, error) {
