@@ -21,7 +21,7 @@ func TestEmployeeRepository(t *testing.T) {
 			clearDatabase()
 		}
 	}()
-	var employeeRepository = employee.NewRepository(db)
+	var employeeRepository = employee.NewEmployeeRepository(db)
 	var fixture = NewEmployeeFixture(employeeRepository)
 
 	t.Run("find an employee by id", func(t *testing.T) {
@@ -31,7 +31,7 @@ func TestEmployeeRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.NotEmpty(got.Id)
+		a.NotEmpty(got.ID)
 		a.NotEmpty(got.CreatedAt)
 		a.NotEmpty(got.UpdatedAt)
 		a.Equal("Test Name", got.Name)
@@ -57,7 +57,7 @@ func TestEmployeeRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.Equal(newEmployeeId, got[0].Id)
+		a.Equal(newEmployeeId, got[0].ID)
 		clearDatabase()
 	})
 
@@ -70,7 +70,7 @@ func TestEmployeeRepository(t *testing.T) {
 
 		a.Nil(err)
 		a.NotEmpty(got)
-		a.Equal(newEmployeeId, got[0].Id)
+		a.Equal(newEmployeeId, got[0].ID)
 		clearDatabase()
 	})
 
